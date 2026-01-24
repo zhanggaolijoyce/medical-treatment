@@ -17,7 +17,24 @@ const doctors = [
     }
   ]  
 
-const patients = []
+const patients = [
+  {
+    id: 1,
+    doctorId: 1,
+    name: '王小明',
+    phone: '13800138000',
+    consent: true,
+    status: 'in_progress'
+  },
+  {
+    id: 2,
+    doctorId: 1,
+    name: '李华',
+    phone: '13900139000',
+    consent: true,
+    status: 'completed'
+  }
+]
 
 app.post('/login', (req, res) => {
     const { username, password } = req.body
