@@ -1,5 +1,5 @@
 import React from "react";
-import QRCode from "qrcode.react";
+import { QRCodeCanvas } from "qrcode.react";
 
 // ⚠️ 这里先假设你已经能拿到 doctorId
 // 后面可以替换成真实登录态
@@ -19,7 +19,7 @@ export default function DoctorQRCode() {
       <div style={styles.card}>
         <p style={styles.doctorName}>{doctor.name}</p>
 
-        <QRCode value={qrValue} size={220} />
+        <QRCodeCanvas value={qrValue} size={220} />
 
         <p style={styles.tip}>
           请患者使用手机扫码，填写知情同意并完成绑定

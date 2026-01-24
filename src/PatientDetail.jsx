@@ -54,14 +54,7 @@ export default function PatientDetail() {
         <div>状态：{patientInfo.status || "进行中"}</div>
       </div>
 
-      {/* ===== 基线 + 7 个访视 ===== */}
-      <VisitForm patientId={patientId} doctorId={doctorId} type="baseline" />
-      <VisitForm patientId={patientId} doctorId={doctorId} type="visit1" />
-      <VisitForm patientId={patientId} doctorId={doctorId} type="visit2" />
-      <VisitForm patientId={patientId} doctorId={doctorId} type="visit3" />
-      <VisitForm patientId={patientId} doctorId={doctorId} type="visit4" />
-      <VisitForm patientId={patientId} doctorId={doctorId} type="visit5" />
-      <VisitForm patientId={patientId} doctorId={doctorId} type="visit6" />
+      <VisitForm patientId={patientId} doctorId={doctorId} />
     </div>
   );
 }

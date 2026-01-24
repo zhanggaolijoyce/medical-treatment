@@ -5,7 +5,7 @@ import Doctor from "./Doctor";
 import Patient from "./Patient";
 import PatientDetail from "./PatientDetail";
 import DoctorQRCode from "./pages/DoctorQRCode";
-import DoctorExport from "./pages/DoctorExport";
+// import DoctorExport from "./pages/DoctorExport";
 
 function App() {
   const [username, setUsername] = useState("");
@@ -74,7 +74,7 @@ function App() {
         {/* ===== 医生端 ===== */}
         <Route path="/doctor" element={<Doctor />} />
         <Route path="/doctor/qrcode" element={<DoctorQRCode />} />
-        <Route path="/doctor/export" element={<DoctorExport />} />
+        {/* <Route path="/doctor/export" element={<DoctorExport />} /> */}
         <Route path="/doctor/patient/:patientId" element={<PatientDetail />} />
 
         {/* ===== 患者端 ===== */}
