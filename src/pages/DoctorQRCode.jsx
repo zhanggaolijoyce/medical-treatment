@@ -9,8 +9,10 @@ const doctor = {
 };
 
 export default function DoctorQRCode() {
+  const params = new URLSearchParams(window.location.search);
+  const doctorId = params.get("doctorId") || doctor.id;
   // 患者扫码后访问的地址
-  const qrValue = `http://localhost:5173/patient/consent?doctorId=${doctor.id}`;
+  const qrValue = `http://localhost:5173/patient/consent?doctorId=${doctorId}`;
 
   return (
     <div style={styles.container}>
