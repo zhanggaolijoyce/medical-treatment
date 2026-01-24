@@ -24,6 +24,7 @@ const patients = [
     name: '王小明',
     phone: '13800138000',
     consent: true,
+    enrollDate: '2024-06-12',
     status: 'in_progress'
   },
   {
@@ -32,6 +33,7 @@ const patients = [
     name: '李华',
     phone: '13900139000',
     consent: true,
+    enrollDate: '2024-05-28',
     status: 'completed'
   }
 ]
@@ -49,6 +51,26 @@ app.post('/login', (req, res) => {
       token: 'mock-token'
     })
   })
+
+app.post('/doctor/change-password', (req, res) => {
+  const { doctorId, oldPassword, newPassword } = req.body
+  const doctor = doctors.find(d => String(d.id) === String(doctorId))
+
+  if (!doctor) {
+    return res.status(404).json({ message: '医生不存在' })
+  }
+
+  if (!oldPassword || doctor.password !== oldPassword) {
+    return res.status(400).json({ message: '旧密码错误' })
+  }
+
+  if (!newPassword) {
+    return res.status(400).json({ message: '新密码不能为空' })
+  }
+
+  doctor.password = newPassword
+  res.json({ success: true })
+})
 
 app.post('/patient', (req, res) => {
 const { doctorId, name, phone, consent } = req.body
@@ -80,6 +102,23 @@ app.get('/patients', (req, res) => {
   
     res.json(result)
   })  
+
+app.get('/patient-info', (req, res) => {
+  const { patientId } = req.query
+  const patient = patients.find(p => String(p.id) === String(patientId))
+
+  if (!patient) {
+    return res.status(404).json({ message: '患者不存在' })
+  }
+
+  res.json({
+    id: patient.id,
+    name: patient.name,
+    phone: patient.phone,
+    enrollDate: patient.enrollDate || '',
+    status: patient.status
+  })
+})
   
 app.post('/patient/complete', (req, res) => {
 const { patientId } = req.body
@@ -111,42 +150,61 @@ app.post('/form', (req, res) => {
 
 
 app.get('/export/excel', (req, res) => {
-const { doctorId } = req.query
+  const { doctorId } = req.query
 
-// 1️⃣ 找到该医生的患者
-const doctorPatients = patients.filter(
-    p => String(p.doctorId) === String(doctorId)
-)
+  const doctorById = new Map(doctors.map(d => [String(d.id), d]))
+  const patientById = new Map(patients.map(p => [String(p.id), p]))
 
-// 2️⃣ 组装 Excel 行数据
-const rows = doctorPatients.map(p => ({
-    姓名: p.name,
-    手机号: p.phone,
-    状态: p.status === 'completed' ? '已完成' : '进行中'
-}))
+  const scopedPatients = doctorId
+    ? patients.filter(p => String(p.doctorId) === String(doctorId))
+    : patients
 
-// 3️⃣ 创建 worksheet
-const worksheet = XLSX.utils.json_to_sheet(rows)
-const workbook = XLSX.utils.book_new()
-XLSX.utils.book_append_sheet(workbook, worksheet, '患者数据')
+  const patientRows = scopedPatients.map(p => ({
+    医生编号: p.doctorId,
+    医生账号: (doctorById.get(String(p.doctorId)) || {}).username || '',
+    患者姓名: p.name,
+    手机号: p.phone
+  }))
 
-// 4️⃣ 导出为 buffer
-const buffer = XLSX.write(workbook, {
+  const scopedPatientIds = new Set(scopedPatients.map(p => String(p.id)))
+  const scopedForms = doctorId
+    ? forms.filter(f => scopedPatientIds.has(String(f.patientId)))
+    : forms
+
+  const formRows = scopedForms.map(f => {
+    const patient = patientById.get(String(f.patientId)) || {}
+    return {
+      患者编号: f.patientId,
+      患者姓名: patient.name || '',
+      手机号: patient.phone || '',
+      表单类型: f.formType,
+      表单内容: JSON.stringify(f.data || {}),
+      提交时间: f.createdAt ? new Date(f.createdAt).toISOString() : ''
+    }
+  })
+
+  const workbook = XLSX.utils.book_new()
+  const patientSheet = XLSX.utils.json_to_sheet(patientRows)
+  XLSX.utils.book_append_sheet(workbook, patientSheet, '医生患者')
+
+  const formSheet = XLSX.utils.json_to_sheet(formRows)
+  XLSX.utils.book_append_sheet(workbook, formSheet, '患者表单')
+
+  const buffer = XLSX.write(workbook, {
     type: 'buffer',
     bookType: 'xlsx'
-})
+  })
 
-// 5️⃣ 设置响应头
-res.setHeader(
+  res.setHeader(
     'Content-Disposition',
-    'attachment; filename=patients.xlsx'
-)
-res.setHeader(
+    'attachment; filename=export.xlsx'
+  )
+  res.setHeader(
     'Content-Type',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-)
+  )
 
-res.send(buffer)
+  res.send(buffer)
 })
 
 app.listen(3001, () => {

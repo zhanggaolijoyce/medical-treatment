@@ -6,7 +6,7 @@ import BaselineForm from "./BaselineForm";
 import TreatmentForm from "./TreatmentForm";
 import FollowUpForm from "./FollowUpForm";
 
-export default function VisitForm() {
+export default function VisitForm({ patientId }) {
   const [current, setCurrent] = useState(0);
   const [data, setData] = useState({
     patient_basic: {},
@@ -33,6 +33,7 @@ export default function VisitForm() {
       content: (
         <BaselineForm
           initialValues={data.baseline}
+          onPrev={() => setCurrent(0)}
           onFinish={(values) => {
             setData({ ...data, baseline: values });
             setCurrent(2);
@@ -45,6 +46,7 @@ export default function VisitForm() {
       content: (
         <TreatmentForm
           initialValues={data.treatment}
+          onPrev={() => setCurrent(1)}
           onFinish={(values) => {
             setData({ ...data, treatment: values });
             setCurrent(3);
@@ -57,6 +59,7 @@ export default function VisitForm() {
       content: (
         <FollowUpForm
           value={data.follow_ups}
+          baselineDate={data.baseline?.first_visit_date}
           onChange={(list) => {
             setData({ ...data, follow_ups: list });
           }}
@@ -75,8 +78,20 @@ export default function VisitForm() {
           type="primary"
           style={{ marginTop: 24 }}
           onClick={() => {
-            console.log("最终提交数据", data);
-            // POST /api/visits
+            if (!patientId) {
+              console.warn("缺少 patientId，无法保存表单");
+              return;
+            }
+
+            fetch("http://localhost:3001/form", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                patientId,
+                formType: "visit",
+                data
+              })
+            });
           }}
         >
           保存

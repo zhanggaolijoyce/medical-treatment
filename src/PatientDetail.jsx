@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import VisitForm from "./components/VisitForm";
 
 export default function PatientDetail() {
+  const { patientId: patientIdParam } = useParams();
   const [searchParams] = useSearchParams();
-  const patientId = searchParams.get("patientId"); // URL 里传 patientId
+  const patientId = patientIdParam || searchParams.get("patientId"); // path param first
   const doctorId = searchParams.get("doctorId");   // URL 里传 doctorId
   const [patientInfo, setPatientInfo] = useState(null);
   const [loading, setLoading] = useState(true);

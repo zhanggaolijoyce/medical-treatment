@@ -50,6 +50,24 @@ export default function DoctorLayout() {
         >
           二维码
         </NavLink>
+        <NavLink
+          to={`/doctor/export${search}`}
+          style={({ isActive }) => ({
+            ...tabBaseStyle,
+            ...(isActive ? activeTabStyle : null),
+          })}
+        >
+          导出
+        </NavLink>
+        <NavLink
+          to={`/doctor/password${search}`}
+          style={({ isActive }) => ({
+            ...tabBaseStyle,
+            ...(isActive ? activeTabStyle : null),
+          })}
+        >
+          修改密码
+        </NavLink>
       </div>
       <Outlet />
     </div>

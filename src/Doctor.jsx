@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Doctor() {
   const params = new URLSearchParams(window.location.search);
   const doctorId = params.get("doctorId");
+  const navigate = useNavigate();
 
   const [patients, setPatients] = useState([]);
   const [keyword, setKeyword] = useState("");
@@ -66,7 +68,23 @@ export default function Doctor() {
         <tbody>
           {patients.map((p) => (
             <tr key={p.id}>
-              <td>{p.name}</td>
+              <td>
+                <button
+                  onClick={() =>
+                    navigate(`/doctor/patient/${p.id}?doctorId=${doctorId}`)
+                  }
+                  style={{
+                    padding: 0,
+                    border: "none",
+                    background: "none",
+                    color: "#1677ff",
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                  }}
+                >
+                  {p.name}
+                </button>
+              </td>
               <td>{p.phone}</td>
               <td>{p.status === "completed" ? "已完成" : "进行中"}</td>
               <td>

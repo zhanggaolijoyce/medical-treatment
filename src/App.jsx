@@ -7,6 +7,7 @@ import PatientDetail from "./PatientDetail";
 import DoctorQRCode from "./pages/DoctorQRCode";
 import DoctorExport from "./pages/DoctorExport";
 import DoctorLayout from "./pages/DoctorLayout";
+import DoctorPassword from "./pages/DoctorPassword";
 
 function App() {
   const [username, setUsername] = useState("");
@@ -77,6 +78,7 @@ function App() {
           <Route index element={<Doctor />} />
           <Route path="qrcode" element={<DoctorQRCode />} />
           <Route path="export" element={<DoctorExport />} />
+          <Route path="password" element={<DoctorPassword />} />
           <Route path="patient/:patientId" element={<PatientDetail />} />
         </Route>
 
