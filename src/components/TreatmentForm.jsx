@@ -78,7 +78,7 @@ export default function TreatmentForm({ initialValues, onFinish, onPrev }) {
 
       <Space>
         <Button onClick={onPrev}>上一步</Button>
-        <Button type="primary" htmlType="submit">下一步</Button>
+        <Button type="primary" htmlType="submit">完成初诊</Button>
       </Space>
     </Form>
   );

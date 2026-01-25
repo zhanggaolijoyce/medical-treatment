@@ -2,7 +2,7 @@
 import { Button, DatePicker, Radio, Upload, Input, Checkbox } from "antd";
 import dayjs from "dayjs";
 
-export default function FollowUpForm({ value = [], onChange, baselineDate }) {
+export default function FollowUpForm({ value = [], onChange, baselineDate, allowAdd = true }) {
   const vssFields = [
     {
       key: "color",
@@ -99,6 +99,9 @@ export default function FollowUpForm({ value = [], onChange, baselineDate }) {
   };
 
   const add = () => {
+    if (!allowAdd) {
+      return;
+    }
     onChange([...value, { follow_up_date: "", vss_score: {} }]);
   };
 
@@ -179,7 +182,9 @@ export default function FollowUpForm({ value = [], onChange, baselineDate }) {
         </div>
       ))}
 
-      <Button onClick={add}>新增随访</Button>
+      <Button onClick={add} disabled={!allowAdd}>
+        新增随访
+      </Button>
     </>
   );
 }
