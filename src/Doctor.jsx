@@ -19,6 +19,8 @@ export default function Doctor() {
 
   useEffect(() => {
     loadPatients();
+    const timer = setInterval(loadPatients, 3000);
+    return () => clearInterval(timer);
   }, []);
 
   const markCompleted = async (patientId) => {
