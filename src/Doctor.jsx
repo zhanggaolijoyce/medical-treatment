@@ -35,28 +35,32 @@ export default function Doctor() {
   };
 
   return (
-    <div style={{ padding: 40 }}>
-      <h2>我的患者</h2>
-
-      <button
-        style={{ marginBottom: 20 }}
-        onClick={() => {
-          window.location.href = `http://localhost:3001/export/excel?doctorId=${doctorId}`;
-        }}
-      >
-        导出 Excel
-      </button>
-
-      <div style={{ marginBottom: 10 }}>
-        <input
-          placeholder="搜索姓名或手机号"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-        />
-        <button onClick={loadPatients}>搜索</button>
+    <div className="page">
+      <div className="section-title">
+        <h2>我的患者</h2>
+        <button
+          onClick={() => {
+            window.location.href = `http://localhost:3001/export/excel?doctorId=${doctorId}`;
+          }}
+        >
+          导出 Excel
+        </button>
       </div>
 
-      <table border="1" cellPadding="8" style={{ width: "100%" }}>
+      <div className="card stack" style={{ marginBottom: 16 }}>
+        <div className="subtitle">快速检索患者信息</div>
+        <div className="inline-inputs">
+          <input
+            placeholder="搜索姓名或手机号"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+          />
+          <button onClick={loadPatients}>搜索</button>
+        </div>
+      </div>
+
+      <div className="table-wrap">
+        <table>
         <thead>
           <tr>
             <th>姓名</th>
@@ -73,14 +77,7 @@ export default function Doctor() {
                   onClick={() =>
                     navigate(`/doctor/patient/${p.id}?doctorId=${doctorId}`)
                   }
-                  style={{
-                    padding: 0,
-                    border: "none",
-                    background: "none",
-                    color: "#1677ff",
-                    cursor: "pointer",
-                    textDecoration: "underline",
-                  }}
+                  className="link-button"
                 >
                   {p.name}
                 </button>
@@ -88,15 +85,18 @@ export default function Doctor() {
               <td>{p.phone}</td>
               <td>{p.status === "completed" ? "已完成" : "进行中"}</td>
               <td>
-                <button onClick={openSurvey}>填写问卷</button>
-                {p.status !== "completed" && (
-                  <button onClick={() => markCompleted(p.id)}>标记完成</button>
-                )}
+                <div className="table-actions">
+                  <button onClick={openSurvey}>填写问卷</button>
+                  {p.status !== "completed" && (
+                    <button onClick={() => markCompleted(p.id)}>标记完成</button>
+                  )}
+                </div>
               </td>
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
+      </div>
     </div>
   );
 }

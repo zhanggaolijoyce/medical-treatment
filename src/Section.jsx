@@ -18,20 +18,19 @@ export default function Section({ title, formType, patientId }) {
   }
 
   return (
-    <div style={{ border: '1px solid #ccc', marginBottom: 20, padding: 20 }}>
+    <div className="card stack">
       <h3>{title}</h3>
 
       <textarea
         rows="4"
-        style={{ width: '100%' }}
         value={value}
         onChange={e => setValue(e.target.value)}
       />
 
-      <br />
-
-      <button onClick={save}>保存</button>
-      {saved && <span style={{ marginLeft: 10 }}>已保存</span>}
+      <div>
+        <button onClick={save}>保存</button>
+        {saved && <span style={{ marginLeft: 10 }}>已保存</span>}
+      </div>
     </div>
   )
 }

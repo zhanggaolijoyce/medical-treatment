@@ -35,30 +35,28 @@ export default function DoctorPassword() {
   };
 
   return (
-    <div style={{ padding: 40, maxWidth: 420 }}>
-      <h2>修改密码</h2>
+    <div className="page">
+      <div className="card stack" style={{ maxWidth: 420 }}>
+        <h2>修改密码</h2>
 
-      <input
-        type="password"
-        placeholder="旧密码"
-        value={oldPassword}
-        onChange={(e) => setOldPassword(e.target.value)}
-        style={{ width: "100%", padding: 8, marginBottom: 10 }}
-      />
+        <input
+          type="password"
+          placeholder="旧密码"
+          value={oldPassword}
+          onChange={(e) => setOldPassword(e.target.value)}
+        />
 
-      <input
-        type="password"
-        placeholder="新密码"
-        value={newPassword}
-        onChange={(e) => setNewPassword(e.target.value)}
-        style={{ width: "100%", padding: 8, marginBottom: 10 }}
-      />
+        <input
+          type="password"
+          placeholder="新密码"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+        />
 
-      <button onClick={submit} style={{ width: "100%", padding: 10 }}>
-        确认修改
-      </button>
+        <button onClick={submit}>确认修改</button>
 
-      {message && <div style={{ marginTop: 15 }}>{message}</div>}
+        {message && <div style={{ marginTop: 6 }}>{message}</div>}
+      </div>
     </div>
   );
 }

@@ -108,24 +108,24 @@ export default function FollowUpForm({ value = [], onChange, baselineDate, allow
   return (
     <>
       {value.map((item, index) => (
-        <div key={index} style={{ border: "1px solid #eee", padding: 16, marginBottom: 16 }}>
-          <div style={{ marginBottom: 8 }}>复诊日期（距初诊 3 个月 ± 1 周）</div>
+        <div key={index} className="followup-card">
+          <div className="form-section-title">复诊日期（距初诊 3 个月 ± 1 周）</div>
           <DatePicker
             disabledDate={disableOutsideWindow}
             value={item.follow_up_date || null}
             onChange={(d) => updateItem(index, { follow_up_date: d })}
           />
 
-          <div style={{ marginTop: 16, marginBottom: 8 }}>
+          <div className="form-section" style={{ marginTop: 16 }}>
             改良 VSS 评分（共 6 项，评分越高瘢痕越严重）
           </div>
-          <div style={{ color: "#666", fontSize: 12, marginBottom: 8 }}>
+          <div className="form-note" style={{ marginBottom: 8 }}>
             改良 VSS 量表评定建议由医生、护士等医药卫生专业人士进行，且量表评估全程由同一人进行
           </div>
 
           {vssFields.map((field) => (
-            <div key={field.key} style={{ marginBottom: 12 }}>
-              <div style={{ marginBottom: 6 }}>{field.label}</div>
+            <div key={field.key} className="form-section">
+              <div className="form-section-title">{field.label}</div>
               <Radio.Group
                 options={field.options}
                 value={item.vss_score?.[field.key]}
@@ -134,11 +134,9 @@ export default function FollowUpForm({ value = [], onChange, baselineDate, allow
             </div>
           ))}
 
-          <div style={{ marginBottom: 12 }}>
-            总分：{item.vss_score?.total || 0}
-          </div>
+          <div className="form-section">总分：{item.vss_score?.total || 0}</div>
 
-          <div style={{ marginBottom: 8 }}>瘢痕图片（3张，高清，正面，拍摄全貌）</div>
+          <div className="form-section-title">瘢痕图片（3张，高清，正面，拍摄全貌）</div>
           <Upload
             listType="picture-card"
             beforeUpload={() => false}
@@ -151,7 +149,9 @@ export default function FollowUpForm({ value = [], onChange, baselineDate, allow
             <Button type="dashed">上传图片</Button>
           </Upload>
 
-          <div style={{ marginTop: 16 }}>安全性信息记录</div>
+          <div className="form-section" style={{ marginTop: 16 }}>
+            安全性信息记录
+          </div>
           <Radio.Group
             value={item.safety_has}
             onChange={(e) => updateItem(index, { safety_has: e.target.value })}
@@ -162,7 +162,9 @@ export default function FollowUpForm({ value = [], onChange, baselineDate, allow
 
           {item.safety_has === "yes" && (
             <>
-              <div style={{ marginTop: 12, marginBottom: 6 }}>症状（可多选）</div>
+              <div className="form-section-title" style={{ marginTop: 12 }}>
+                症状（可多选）
+              </div>
               <Checkbox.Group
                 options={["红肿", "瘙痒", "其他"]}
                 value={item.safety_symptoms || []}

@@ -15,42 +15,13 @@ export default function DoctorQRCode() {
   const qrValue = `http://localhost:5173/patient/consent?doctorId=${doctorId}`;
 
   return (
-    <div style={styles.container}>
-      <h2>我的二维码</h2>
-
-      <div style={styles.card}>
-        <p style={styles.doctorName}>{doctor.name}</p>
-
+    <div className="page">
+      <div className="card" style={{ textAlign: "center" }}>
+        <h2>我的二维码</h2>
+        <p className="subtitle">{doctor.name}</p>
         <QRCodeCanvas value={qrValue} size={220} />
-
-        <p style={styles.tip}>
-          请患者使用手机扫码，填写知情同意并完成绑定
-        </p>
+        <p className="form-note">请患者使用手机扫码，填写知情同意并完成绑定</p>
       </div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    padding: "24px",
-    textAlign: "center",
-  },
-  card: {
-    display: "inline-block",
-    padding: "24px",
-    border: "1px solid #e5e5e5",
-    borderRadius: "8px",
-    marginTop: "20px",
-  },
-  doctorName: {
-    fontSize: "16px",
-    fontWeight: "bold",
-    marginBottom: "12px",
-  },
-  tip: {
-    marginTop: "16px",
-    fontSize: "14px",
-    color: "#666",
-  },
-};

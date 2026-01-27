@@ -113,8 +113,10 @@ export default function VisitForm({ patientId }) {
             label: "初诊表单",
             children: (
               <>
-                <Steps current={current} items={steps.map(s => ({ title: s.title }))} />
-                <div style={{ marginTop: 24 }}>{steps[current].content}</div>
+                <div className="card">
+                  <Steps current={current} items={steps.map(s => ({ title: s.title }))} />
+                  <div style={{ marginTop: 20 }}>{steps[current].content}</div>
+                </div>
 
                 {current === 2 && initialComplete && (
                   <Button
@@ -139,14 +141,16 @@ export default function VisitForm({ patientId }) {
             label: "随访表单",
             children: (
               <>
-                <FollowUpForm
-                  value={data.follow_ups}
-                  baselineDate={data.baseline?.first_visit_date}
-                  allowAdd={canAddFollowUp}
-                  onChange={(list) => {
-                    setData({ ...data, follow_ups: list });
-                  }}
-                />
+                <div className="card">
+                  <FollowUpForm
+                    value={data.follow_ups}
+                    baselineDate={data.baseline?.first_visit_date}
+                    allowAdd={canAddFollowUp}
+                    onChange={(list) => {
+                      setData({ ...data, follow_ups: list });
+                    }}
+                  />
+                </div>
                 {canSaveFollowUp && (
                   <Button
                     type="primary"

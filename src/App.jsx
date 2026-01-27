@@ -8,6 +8,7 @@ import DoctorQRCode from "./pages/DoctorQRCode";
 import DoctorExport from "./pages/DoctorExport";
 import DoctorLayout from "./pages/DoctorLayout";
 import DoctorPassword from "./pages/DoctorPassword";
+import "./App.css";
 
 function App() {
   const [username, setUsername] = useState("");
@@ -41,34 +42,32 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
+      <div className="app-shell">
+        <Routes>
         {/* ===== 默认：登录页 ===== */}
         <Route
           path="/"
           element={
-            <div style={{ padding: 40, maxWidth: 400 }}>
+            <div className="auth-card">
               <h2>医生登录</h2>
+              <div className="stack">
+                <input
+                  placeholder="账号"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
 
-              <input
-                placeholder="账号"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                style={{ width: "100%", padding: 8, marginBottom: 10 }}
-              />
+                <input
+                  type="password"
+                  placeholder="密码"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
 
-              <input
-                type="password"
-                placeholder="密码"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={{ width: "100%", padding: 8, marginBottom: 10 }}
-              />
+                <button onClick={login}>登录</button>
+              </div>
 
-              <button onClick={login} style={{ width: "100%", padding: 10 }}>
-                登录
-              </button>
-
-              {message && <div style={{ marginTop: 15 }}>{message}</div>}
+              {message && <div style={{ marginTop: 12 }}>{message}</div>}
             </div>
           }
         />
@@ -87,7 +86,8 @@ function App() {
 
         {/* ===== 兜底 ===== */}
         <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+        </Routes>
+      </div>
     </BrowserRouter>
   );
 }

@@ -1,42 +1,230 @@
-#root {
-  max-width: 1280px;
+.app-shell {
+  min-height: 100dvh;
+  padding: env(safe-area-inset-top) 14px 32px;
+}
+
+.page {
+  max-width: 760px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+  padding: 18px 16px 24px;
+  background: transparent;
 }
 
 .card {
-  padding: 2em;
+  background: var(--card-bg);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
 }
 
-.read-the-docs {
-  color: #888;
+.card + .card {
+  margin-top: 16px;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.button-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.inline-inputs {
+  display: flex;
+  gap: 10px;
+}
+
+.inline-inputs input {
+  flex: 1;
+}
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 560px;
+}
+
+th,
+td {
+  padding: 12px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+th {
+  background: var(--app-bg-soft);
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--primary);
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.link-button:hover {
+  text-decoration: underline;
+}
+
+.auth-card {
+  max-width: 420px;
+  margin: 10vh auto 0;
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.info-grid {
+  display: grid;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.form-note {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.tab-strip {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--card-bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.tab-link {
+  padding: 10px 14px;
+  border-radius: 12px 12px 0 0;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  color: var(--muted);
+  background: var(--app-bg-soft);
+  font-weight: 600;
+}
+
+.tab-link.active {
+  color: var(--text);
+  background: #fff;
+  box-shadow: 0 -6px 16px rgba(18, 45, 41, 0.08);
+}
+
+.followup-card {
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: #fff;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+
+.form-section {
+  margin-bottom: 14px;
+}
+
+.form-section-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.ant-tabs-nav {
+  margin-bottom: 12px !important;
+}
+
+.ant-tabs-tab {
+  font-weight: 600;
+}
+
+.ant-btn {
+  border-radius: 12px;
+  height: 40px;
+  padding: 0 16px;
+  font-weight: 600;
+}
+
+.ant-btn-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 8px 18px rgba(31, 122, 109, 0.2);
+}
+
+.ant-btn-primary:hover {
+  background: var(--primary-strong) !important;
+  border-color: var(--primary-strong) !important;
+}
+
+.ant-input,
+.ant-picker,
+.ant-select-selector {
+  border-radius: 12px !important;
+}
+
+.ant-steps {
+  background: #fff;
+  border-radius: 16px;
+  padding: 12px 12px 4px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 12px 8px 20px;
+  }
+
+  .auth-card {
+    margin-top: 6vh;
+  }
+
+  table {
+    min-width: 520px;
+  }
+
+  .tab-strip {
+    overflow-x: auto;
+  }
 }

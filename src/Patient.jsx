@@ -36,37 +36,35 @@ export default function Patient() {
   }
 
   return (
-    <div style={{ padding: 40 }}>
-      <h2>患者信息填写</h2>
+    <div className="page">
+      <div className="card stack">
+        <h2>患者信息填写</h2>
+        <div className="subtitle">请填写真实信息，便于医生联系。</div>
 
-      <div>
         <input
           placeholder="姓名"
           value={name}
           onChange={e => setName(e.target.value)}
         />
-      </div>
 
-      <div>
         <input
           placeholder="手机号"
           value={phone}
           onChange={e => setPhone(e.target.value)}
         />
-      </div>
 
-      <div>
-        <label>
+        <label className="subtitle">
           <input
             type="checkbox"
             checked={consent}
             onChange={e => setConsent(e.target.checked)}
+            style={{ marginRight: 8 }}
           />
           我已阅读并同意
         </label>
-      </div>
 
-      <button onClick={submit}>提交并进入问卷</button>
+        <button onClick={submit}>提交并进入问卷</button>
+      </div>
     </div>
   )
 }

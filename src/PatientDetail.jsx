@@ -34,39 +34,32 @@ export default function PatientDetail() {
   }, [patientId]);
 
   if (!patientId) {
-    return <div style={{ padding: 20 }}>缺少 patientId</div>;
+    return <div className="page">缺少 patientId</div>;
   }
 
   if (loading) {
-    return <div style={{ padding: 20 }}>加载中...</div>;
+    return <div className="page">加载中...</div>;
   }
 
   if (!patientInfo) {
-    return <div style={{ padding: 20 }}>患者信息不存在</div>;
+    return <div className="page">患者信息不存在</div>;
   }
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>患者详情 - {patientInfo.name || patientId}</h2>
-      <div style={styles.infoBox}>
-        <div>姓名：{patientInfo.name}</div>
-        <div>手机号：{patientInfo.phone}</div>
-        <div>入组日期：{patientInfo.enrollDate}</div>
-        <div>状态：{patientInfo.status || "进行中"}</div>
+    <div className="page">
+      <div className="card">
+        <h2>患者详情 - {patientInfo.name || patientId}</h2>
+        <div className="info-grid">
+          <div>姓名：{patientInfo.name}</div>
+          <div>手机号：{patientInfo.phone}</div>
+          <div>入组日期：{patientInfo.enrollDate}</div>
+          <div>状态：{patientInfo.status || "进行中"}</div>
+        </div>
       </div>
 
-      <VisitForm patientId={patientId} doctorId={doctorId} />
+      <div style={{ marginTop: 18 }}>
+        <VisitForm patientId={patientId} doctorId={doctorId} />
+      </div>
     </div>
   );
 }
-
-/* ===== 样式 ===== */
-const styles = {
-  infoBox: {
-    border: "1px solid #ddd",
-    padding: 12,
-    borderRadius: 6,
-    marginBottom: 20,
-    backgroundColor: "#f9f9f9",
-  },
-};
