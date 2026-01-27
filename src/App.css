@@ -126,6 +126,16 @@ th {
   color: var(--muted);
 }
 
+.consent-box {
+  background: var(--app-bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
 .tab-strip {
   display: flex;
   gap: 8px;

@@ -30,10 +30,6 @@ export default function Doctor() {
     loadPatients();
   };
 
-  const openSurvey = () => {
-    window.open("https://www.wjx.top/vm/Pwx77fd.aspx");
-  };
-
   return (
     <div className="page">
       <div className="section-title">
@@ -86,7 +82,13 @@ export default function Doctor() {
               <td>{p.status === "completed" ? "已完成" : "进行中"}</td>
               <td>
                 <div className="table-actions">
-                  <button onClick={openSurvey}>填写问卷</button>
+                  <button
+                    onClick={() =>
+                      navigate(`/doctor/patient/${p.id}?doctorId=${doctorId}`)
+                    }
+                  >
+                    填写表单
+                  </button>
                   {p.status !== "completed" && (
                     <button onClick={() => markCompleted(p.id)}>标记完成</button>
                   )}

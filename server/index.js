@@ -73,18 +73,22 @@ app.post('/doctor/change-password', (req, res) => {
 })
 
 app.post('/patient', (req, res) => {
-const { doctorId, name, phone, consent } = req.body
+const { doctorId, name, phone, category, consent } = req.body
 
-patients.push({
+const newPatient = {
     id: patients.length + 1,
     doctorId,
     name,
     phone,
+    category,
     consent,
+    enrollDate: new Date().toISOString().slice(0, 10),
     status: 'in_progress'
-})
+}
 
-res.json({ success: true })
+patients.push(newPatient)
+
+res.json({ success: true, patientId: newPatient.id })
 })
 
 app.get('/patients', (req, res) => {
@@ -115,6 +119,7 @@ app.get('/patient-info', (req, res) => {
     id: patient.id,
     name: patient.name,
     phone: patient.phone,
+    category: patient.category || '',
     enrollDate: patient.enrollDate || '',
     status: patient.status
   })

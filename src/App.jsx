@@ -83,6 +83,7 @@ function App() {
 
         {/* ===== 患者端 ===== */}
         <Route path="/patient" element={<Patient />} />
+        <Route path="/patient/register" element={<Patient />} />
 
         {/* ===== 兜底 ===== */}
         <Route path="*" element={<Navigate to="/" />} />

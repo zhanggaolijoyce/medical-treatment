@@ -12,7 +12,7 @@ export default function DoctorQRCode() {
   const params = new URLSearchParams(window.location.search);
   const doctorId = params.get("doctorId") || doctor.id;
   // 患者扫码后访问的地址
-  const qrValue = `http://localhost:5173/patient/consent?doctorId=${doctorId}`;
+  const qrValue = `http://localhost:5173/patient/register?doctorId=${doctorId}`;
 
   return (
     <div className="page">

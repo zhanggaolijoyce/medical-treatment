@@ -1,70 +1,164 @@
-import { useState } from 'react'
+import { useState } from "react";
+import { Steps, Form, Input, Checkbox, Button, Select } from "antd";
 
 export default function Patient() {
-  const params = new URLSearchParams(window.location.search)
-  const doctorId = params.get('doctorId')
+  const params = new URLSearchParams(window.location.search);
+  const doctorId = params.get("doctorId");
 
-  const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [consent, setConsent] = useState(false)
+  const [current, setCurrent] = useState(0);
+  const [basicInfo, setBasicInfo] = useState(null);
+  const [consent, setConsent] = useState(false);
+  const [consentSigned, setConsentSigned] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [completed, setCompleted] = useState(false);
+
+  const [form] = Form.useForm();
+
+  const nextStep = async () => {
+    try {
+      const values = await form.validateFields();
+      setBasicInfo(values);
+      setCurrent(1);
+    } catch (e) {
+      // validation errors handled by antd
+    }
+  };
+
+  const categoryLabel = basicInfo?.category === "child" ? "儿童" : "成年人";
 
   const submit = async () => {
-    if (!name || !phone || !consent) {
-      alert('请填写完整并勾选同意')
-      return
+    if (!consentSigned) {
+      alert("请先同意并签署");
+      return;
+    }
+    if (!basicInfo) {
+      alert("请先填写基本信息");
+      setCurrent(0);
+      return;
     }
 
-    const res = await fetch('http://localhost:3001/patient', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        doctorId,
-        name,
-        phone,
-        consent
-      })
-    })
+    setSubmitting(true);
+    try {
+      const res = await fetch("http://localhost:3001/patient", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          doctorId,
+          name: basicInfo.name,
+          phone: basicInfo.phone,
+          category: basicInfo.category,
+          consent: true
+        })
+      });
 
-    if (!res.ok) {
-      alert('提交失败')
-      return
+      if (!res.ok) {
+        alert("提交失败");
+        return;
+      }
+
+      setCompleted(true);
+    } finally {
+      setSubmitting(false);
     }
+  };
 
-    // 👉 问卷星链接（先用一个占位）
-    window.location.href =
-      'https://www.wjx.top/vm/Pwx77fd.aspx'
+  if (!doctorId) {
+    return <div className="page">缺少 doctorId，请使用医生二维码进入。</div>;
   }
 
   return (
     <div className="page">
       <div className="card stack">
-        <h2>患者信息填写</h2>
+        <h2>患者注册</h2>
         <div className="subtitle">请填写真实信息，便于医生联系。</div>
 
-        <input
-          placeholder="姓名"
-          value={name}
-          onChange={e => setName(e.target.value)}
+        <Steps
+          current={current}
+          items={[{ title: "基本信息" }, { title: "知情同意" }]}
         />
 
-        <input
-          placeholder="手机号"
-          value={phone}
-          onChange={e => setPhone(e.target.value)}
-        />
+        {completed ? (
+          <div className="stack" style={{ marginTop: 16 }}>
+            <div className="consent-box">
+              您已完成注册，医生将尽快与您联系。
+            </div>
+            <Button type="primary" onClick={() => window.close?.()}>
+              关闭页面
+            </Button>
+          </div>
+        ) : (
+          <>
+            {current === 0 && (
+              <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
+                <Form.Item
+                  label="患者姓名"
+                  name="name"
+                  rules={[{ required: true, message: "请输入姓名" }]}
+                >
+                  <Input placeholder="请输入姓名" />
+                </Form.Item>
+                <Form.Item
+                  label="手机号"
+                  name="phone"
+                  rules={[
+                    { required: true, message: "请输入手机号" },
+                    { pattern: /^1\d{10}$/, message: "请输入正确的手机号" }
+                  ]}
+                >
+                  <Input placeholder="请输入手机号" />
+                </Form.Item>
+                <Form.Item
+                  label="类别"
+                  name="category"
+                  rules={[{ required: true, message: "请选择类别" }]}
+                >
+                  <Select
+                    placeholder="请选择类别"
+                    options={[
+                      { value: "adult", label: "成年人" },
+                      { value: "child", label: "儿童" }
+                    ]}
+                  />
+                </Form.Item>
+                <Button type="primary" onClick={nextStep}>
+                  下一步
+                </Button>
+              </Form>
+            )}
 
-        <label className="subtitle">
-          <input
-            type="checkbox"
-            checked={consent}
-            onChange={e => setConsent(e.target.checked)}
-            style={{ marginRight: 8 }}
-          />
-          我已阅读并同意
-        </label>
+            {current === 1 && (
+              <div className="stack" style={{ marginTop: 16 }}>
+                <div className="consent-box">
+                  <div>我知情并同意。</div>
+                  <div>{categoryLabel}受试者签名：{basicInfo?.name || "-"}</div>
+                  <div>{categoryLabel}受试者电话：{basicInfo?.phone || "-"}</div>
+                </div>
 
-        <button onClick={submit}>提交并进入问卷</button>
+                <div className="button-row">
+                  <Button onClick={() => setCurrent(0)}>上一步</Button>
+                  <Button
+                    onClick={() => {
+                      setConsent(true);
+                      setConsentSigned(true);
+                    }}
+                    disabled={consentSigned}
+                  >
+                    同意并签署
+                  </Button>
+                  <Button
+                    type="primary"
+                    loading={submitting}
+                    onClick={submit}
+                    disabled={!consentSigned}
+                  >
+                    提交
+                  </Button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
-  )
+  );
 }

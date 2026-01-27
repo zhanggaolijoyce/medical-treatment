@@ -52,6 +52,7 @@ export default function PatientDetail() {
         <div className="info-grid">
           <div>姓名：{patientInfo.name}</div>
           <div>手机号：{patientInfo.phone}</div>
+          <div>类别：{patientInfo.category || "-"}</div>
           <div>入组日期：{patientInfo.enrollDate}</div>
           <div>状态：{patientInfo.status || "进行中"}</div>
         </div>
