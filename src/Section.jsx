@@ -1,21 +1,21 @@
-import { useState } from 'react'
+import { useState } from "react";
+import { apiFetch } from "./services/api";
 
 export default function Section({ title, formType, patientId }) {
-  const [value, setValue] = useState('')
-  const [saved, setSaved] = useState(false)
+  const [value, setValue] = useState("");
+  const [saved, setSaved] = useState(false);
 
   const save = async () => {
-    await fetch('http://localhost:3001/form', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    await apiFetch("/form", {
+      method: "POST",
       body: JSON.stringify({
         patientId,
         formType,
         data: { value }
       })
-    })
-    setSaved(true)
-  }
+    });
+    setSaved(true);
+  };
 
   return (
     <div className="card stack">
@@ -24,7 +24,7 @@ export default function Section({ title, formType, patientId }) {
       <textarea
         rows="4"
         value={value}
-        onChange={e => setValue(e.target.value)}
+        onChange={(e) => setValue(e.target.value)}
       />
 
       <div>
@@ -32,5 +32,5 @@ export default function Section({ title, formType, patientId }) {
         {saved && <span style={{ marginLeft: 10 }}>已保存</span>}
       </div>
     </div>
-  )
+  );
 }

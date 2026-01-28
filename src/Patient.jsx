@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Steps, Form, Input, Checkbox, Button, Select } from "antd";
+import { Steps, Form, Input, Button, Select } from "antd";
+import { apiFetch } from "./services/api";
 
 export default function Patient() {
   const params = new URLSearchParams(window.location.search);
@@ -7,7 +8,6 @@ export default function Patient() {
 
   const [current, setCurrent] = useState(0);
   const [basicInfo, setBasicInfo] = useState(null);
-  const [consent, setConsent] = useState(false);
   const [consentSigned, setConsentSigned] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [completed, setCompleted] = useState(false);
@@ -39,15 +39,17 @@ export default function Patient() {
 
     setSubmitting(true);
     try {
-      const res = await fetch("http://localhost:3001/patient", {
+      const res = await apiFetch("/patient", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           doctorId,
           name: basicInfo.name,
           phone: basicInfo.phone,
           category: basicInfo.category,
-          consent: true
+          consentSigned: true,
+          consentName: basicInfo.name,
+          consentPhone: basicInfo.phone,
+          consentTextVersion: "v1"
         })
       });
 
@@ -138,7 +140,6 @@ export default function Patient() {
                   <Button onClick={() => setCurrent(0)}>上一步</Button>
                   <Button
                     onClick={() => {
-                      setConsent(true);
                       setConsentSigned(true);
                     }}
                     disabled={consentSigned}

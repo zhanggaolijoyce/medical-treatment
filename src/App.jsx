@@ -9,9 +9,11 @@ import DoctorExport from "./pages/DoctorExport";
 import DoctorLayout from "./pages/DoctorLayout";
 import DoctorPassword from "./pages/DoctorPassword";
 import "./App.css";
+import { apiFetch } from "./services/api";
+import { setAuth } from "./services/auth";
 
 function App() {
-  const [username, setUsername] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
@@ -19,10 +21,9 @@ function App() {
     setMessage("");
 
     try {
-      const res = await fetch("http://localhost:3001/login", {
+      const res = await apiFetch("/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ phone, password })
       });
 
       if (!res.ok) {
@@ -32,9 +33,15 @@ function App() {
 
       const data = await res.json();
       setMessage("登录成功");
+      setAuth({ token: data.token, doctorId: data.doctorId });
+
+      if (data.mustChangePassword) {
+        window.location.href = "/doctor/password";
+        return;
+      }
 
       // ✅ 登录成功后进入医生端
-      window.location.href = `/doctor?doctorId=${data.doctorId}`;
+      window.location.href = "/doctor";
     } catch (e) {
       setMessage("无法连接服务器");
     }
@@ -52,9 +59,9 @@ function App() {
               <h2>医生登录</h2>
               <div className="stack">
                 <input
-                  placeholder="账号"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="手机号"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                 />
 
                 <input

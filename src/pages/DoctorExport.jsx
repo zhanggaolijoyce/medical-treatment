@@ -1,10 +1,23 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { apiFetch } from "../services/api";
 
 export default function DoctorExport() {
-  const location = useLocation();
-  const params = new URLSearchParams(location.search);
-  const doctorId = params.get("doctorId");
+  const downloadExport = async () => {
+    const res = await apiFetch("/export/excel");
+    if (!res.ok) {
+      alert("导出失败");
+      return;
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "export.xlsx";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="page">
@@ -12,22 +25,7 @@ export default function DoctorExport() {
         <h2>导出数据</h2>
         <p>支持导出医生患者列表和患者表单数据。</p>
         <div className="button-row">
-          {doctorId && (
-            <button
-              onClick={() => {
-                window.location.href = `http://localhost:3001/export/excel?doctorId=${doctorId}`;
-              }}
-            >
-              导出当前医生数据
-            </button>
-          )}
-          <button
-            onClick={() => {
-              window.location.href = "http://localhost:3001/export/excel";
-            }}
-          >
-            导出全部医生数据
-          </button>
+          <button onClick={downloadExport}>导出当前医生数据</button>
         </div>
       </div>
     </div>

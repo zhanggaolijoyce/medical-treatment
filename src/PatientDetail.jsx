@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import VisitForm from "./components/VisitForm";
+import { apiFetch } from "./services/api";
 
 export default function PatientDetail() {
   const { patientId: patientIdParam } = useParams();
   const [searchParams] = useSearchParams();
   const patientId = patientIdParam || searchParams.get("patientId"); // path param first
-  const doctorId = searchParams.get("doctorId");   // URL 里传 doctorId
   const [patientInfo, setPatientInfo] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -15,8 +15,8 @@ export default function PatientDetail() {
     async function fetchPatient() {
       setLoading(true);
       try {
-        const res = await fetch(
-          `http://localhost:3001/patient-info?patientId=${patientId}`
+        const res = await apiFetch(
+          `/patient-info?patientId=${encodeURIComponent(patientId)}`
         );
         if (res.ok) {
           const data = await res.json();
@@ -45,6 +45,25 @@ export default function PatientDetail() {
     return <div className="page">患者信息不存在</div>;
   }
 
+  const downloadPatientExport = async () => {
+    const res = await apiFetch(
+      `/export/patient-excel?patientId=${encodeURIComponent(patientId)}`
+    );
+    if (!res.ok) {
+      alert("导出失败");
+      return;
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${patientInfo.name || "patient"}-export.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="page">
       <div className="card">
@@ -56,10 +75,13 @@ export default function PatientDetail() {
           <div>入组日期：{patientInfo.enrollDate}</div>
           <div>状态：{patientInfo.status || "进行中"}</div>
         </div>
+        <div style={{ marginTop: 12 }}>
+          <button onClick={downloadPatientExport}>导出该患者表单</button>
+        </div>
       </div>
 
       <div style={{ marginTop: 18 }}>
-        <VisitForm patientId={patientId} doctorId={doctorId} />
+        <VisitForm patientId={patientId} />
       </div>
     </div>
   );

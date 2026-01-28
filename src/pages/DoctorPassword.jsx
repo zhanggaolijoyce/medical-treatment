@@ -1,11 +1,7 @@
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { apiFetch } from "../services/api";
 
 export default function DoctorPassword() {
-  const location = useLocation();
-  const search = new URLSearchParams(location.search || "");
-  const doctorId = search.get("doctorId");
-
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -14,10 +10,9 @@ export default function DoctorPassword() {
     setMessage("");
 
     try {
-      const res = await fetch("http://localhost:3001/doctor/change-password", {
+      const res = await apiFetch("/doctor/change-password", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ doctorId, oldPassword, newPassword }),
+        body: JSON.stringify({ oldPassword, newPassword }),
       });
 
       if (!res.ok) {

@@ -1,8 +1,16 @@
+import { useEffect } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { getToken } from "../services/auth";
 
 export default function DoctorLayout() {
   const location = useLocation();
   const search = location.search || "";
+
+  useEffect(() => {
+    if (!getToken()) {
+      window.location.href = "/";
+    }
+  }, []);
 
   return (
     <div>

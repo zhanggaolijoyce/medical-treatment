@@ -5,6 +5,7 @@ import PatientBasicForm from "./PatientBasicForm";
 import BaselineForm from "./BaselineForm";
 import TreatmentForm from "./TreatmentForm";
 import FollowUpForm from "./FollowUpForm";
+import { apiFetch } from "../services/api";
 
 export default function VisitForm({ patientId }) {
   const [current, setCurrent] = useState(0);
@@ -64,9 +65,8 @@ export default function VisitForm({ patientId }) {
       return Promise.reject(new Error("missing patientId"));
     }
 
-    return fetch("http://localhost:3001/form", {
+    return apiFetch("/form", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         patientId,
         formType,

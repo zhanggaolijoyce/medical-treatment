@@ -1,20 +1,23 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "./services/api";
 
 export default function Doctor() {
-  const params = new URLSearchParams(window.location.search);
-  const doctorId = params.get("doctorId");
   const navigate = useNavigate();
 
   const [patients, setPatients] = useState([]);
   const [keyword, setKeyword] = useState("");
 
   const loadPatients = async () => {
-    const res = await fetch(
-      `http://localhost:3001/patients?doctorId=${doctorId}&keyword=${keyword}`
+    const res = await apiFetch(
+      `/patients?keyword=${encodeURIComponent(keyword || "")}`
     );
+    if (res.status === 401) {
+      window.location.href = "/";
+      return;
+    }
     const data = await res.json();
-    setPatients(data);
+    setPatients(Array.isArray(data) ? data : []);
   };
 
   useEffect(() => {
@@ -24,25 +27,34 @@ export default function Doctor() {
   }, []);
 
   const markCompleted = async (patientId) => {
-    await fetch("http://localhost:3001/patient/complete", {
+    await apiFetch("/patient/complete", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ patientId }),
     });
     loadPatients();
+  };
+
+  const downloadExport = async () => {
+    const res = await apiFetch("/export/excel");
+    if (!res.ok) {
+      alert("导出失败");
+      return;
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "export.xlsx";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   };
 
   return (
     <div className="page">
       <div className="section-title">
         <h2>我的患者</h2>
-        <button
-          onClick={() => {
-            window.location.href = `http://localhost:3001/export/excel?doctorId=${doctorId}`;
-          }}
-        >
-          导出 Excel
-        </button>
       </div>
 
       <div className="card stack" style={{ marginBottom: 16 }}>
@@ -73,7 +85,7 @@ export default function Doctor() {
               <td>
                 <button
                   onClick={() =>
-                    navigate(`/doctor/patient/${p.id}?doctorId=${doctorId}`)
+                    navigate(`/doctor/patient/${p.id}`)
                   }
                   className="link-button"
                 >
@@ -86,7 +98,7 @@ export default function Doctor() {
                 <div className="table-actions">
                   <button
                     onClick={() =>
-                      navigate(`/doctor/patient/${p.id}?doctorId=${doctorId}`)
+                      navigate(`/doctor/patient/${p.id}`)
                     }
                   >
                     填写表单
