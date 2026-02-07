@@ -33,11 +33,12 @@ export default function PatientBasicForm({ initialValues, onFinish }) {
         </Radio.Group>
       </Form.Item>
 
-      <Form.Item label="现病史（剖宫产、烧伤、整形美容互斥）" name="disease_type" rules={[{ required: true }]}>
+      <Form.Item label="现病史（剖宫产、烧伤、整形美容、甲乳手术互斥）" name="disease_type" rules={[{ required: true }]}>
         <Radio.Group>
           <Radio value="cesarean">剖宫产手术</Radio>
           <Radio value="burn">烧伤</Radio>
           <Radio value="cosmetic">整形美容手术</Radio>
+          <Radio value="breast">甲乳手术</Radio>
         </Radio.Group>
       </Form.Item>
 

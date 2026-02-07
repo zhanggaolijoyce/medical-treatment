@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Steps, Form, Input, Button, Select } from "antd";
 import { apiFetch } from "./services/api";
+import ConsentText from "./assets/ConsentText";
 
 export default function Patient() {
   const params = new URLSearchParams(window.location.search);
@@ -13,6 +14,9 @@ export default function Patient() {
   const [completed, setCompleted] = useState(false);
 
   const [form] = Form.useForm();
+  const closePage = () => {
+    window.close?.();
+  };
 
   const nextStep = async () => {
     try {
@@ -59,6 +63,7 @@ export default function Patient() {
       }
 
       setCompleted(true);
+      setTimeout(closePage, 0);
     } finally {
       setSubmitting(false);
     }
@@ -84,7 +89,7 @@ export default function Patient() {
             <div className="consent-box">
               您已完成注册，医生将尽快与您联系。
             </div>
-            <Button type="primary" onClick={() => window.close?.()}>
+            <Button type="primary" onClick={closePage}>
               关闭页面
             </Button>
           </div>
@@ -117,8 +122,8 @@ export default function Patient() {
                   <Select
                     placeholder="请选择类别"
                     options={[
-                      { value: "adult", label: "成年人" },
-                      { value: "child", label: "儿童" }
+                      { value: "成年人", label: "成年人" },
+                      { value: "儿童", label: "儿童" }
                     ]}
                   />
                 </Form.Item>
@@ -131,9 +136,11 @@ export default function Patient() {
             {current === 1 && (
               <div className="stack" style={{ marginTop: 16 }}>
                 <div className="consent-box">
-                  <div>我知情并同意。</div>
+                  <div><ConsentText /></div>
                   <div>{categoryLabel}受试者签名：{basicInfo?.name || "-"}</div>
                   <div>{categoryLabel}受试者电话：{basicInfo?.phone || "-"}</div>
+                  <div>日期{new Date().toLocaleDateString()}</div>
+                  <div>（如果受试者不识字时尚需见证人签名,如果受试者无行为能力时则需代理人签名）</div>
                 </div>
 
                 <div className="button-row">

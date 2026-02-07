@@ -1,6 +1,8 @@
 // FollowUpForm.jsx
 import { Button, DatePicker, Radio, Upload, Input, Checkbox } from "antd";
 import dayjs from "dayjs";
+import { API_BASE } from "../services/api";
+import { getToken } from "../services/auth";
 
 export default function FollowUpForm({ value = [], onChange, baselineDate, allowAdd = true }) {
   const vssFields = [
@@ -65,7 +67,17 @@ export default function FollowUpForm({ value = [], onChange, baselineDate, allow
       ]
     }
   ];
-  const normFile = (e) => (Array.isArray(e) ? e : e?.fileList);
+  const normalizeFileList = (fileList = []) =>
+    fileList.map((file) => {
+      const url = file?.url || file?.response?.url;
+      return url ? { ...file, url } : file;
+    });
+  const normFile = (e) => {
+    const fileList = Array.isArray(e) ? e : e?.fileList || [];
+    return normalizeFileList(fileList);
+  };
+  const token = getToken();
+  const uploadHeaders = token ? { Authorization: `Bearer ${token}` } : {};
 
   const updateItem = (index, patch) => {
     const list = [...value];
@@ -139,7 +151,8 @@ export default function FollowUpForm({ value = [], onChange, baselineDate, allow
           <div className="form-section-title">瘢痕图片（3张，高清，正面，拍摄全貌）</div>
           <Upload
             listType="picture-card"
-            beforeUpload={() => false}
+            action={`${API_BASE}/upload`}
+            headers={uploadHeaders}
             accept="image/*"
             multiple
             maxCount={3}

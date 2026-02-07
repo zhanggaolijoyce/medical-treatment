@@ -1,6 +1,8 @@
 // BaselineForm.jsx
 import { Form, DatePicker, Upload, Button, Space, Radio, Input, Checkbox } from "antd";
 import { useEffect } from "react";
+import { API_BASE } from "../services/api";
+import { getToken } from "../services/auth";
 
 export default function BaselineForm({ initialValues, onFinish, onPrev }) {
   const [form] = Form.useForm();
@@ -67,7 +69,17 @@ export default function BaselineForm({ initialValues, onFinish, onPrev }) {
     }
   ];
   const vssValues = Form.useWatch("vss_score", form) || {};
-  const normFile = (e) => (Array.isArray(e) ? e : e?.fileList);
+  const normalizeFileList = (fileList = []) =>
+    fileList.map((file) => {
+      const url = file?.url || file?.response?.url;
+      return url ? { ...file, url } : file;
+    });
+  const normFile = (e) => {
+    const fileList = Array.isArray(e) ? e : e?.fileList || [];
+    return normalizeFileList(fileList);
+  };
+  const token = getToken();
+  const uploadHeaders = token ? { Authorization: `Bearer ${token}` } : {};
 
   useEffect(() => {
     const { total: _ignored, ...scores } = vssValues || {};
@@ -130,46 +142,14 @@ export default function BaselineForm({ initialValues, onFinish, onPrev }) {
       >
         <Upload
           listType="picture-card"
-          beforeUpload={() => false}
+          action={`${API_BASE}/upload`}
+          headers={uploadHeaders}
           accept="image/*"
           multiple
           maxCount={3}
         >
           <Button type="dashed">上传图片</Button>
         </Upload>
-      </Form.Item>
-
-      <Form.Item label="安全性信息记录" name="safety_has" rules={[{ required: true }]}>
-        <Radio.Group>
-          <Radio value="yes">有</Radio>
-          <Radio value="no">无</Radio>
-        </Radio.Group>
-      </Form.Item>
-
-      <Form.Item noStyle shouldUpdate>
-        {({ getFieldValue }) =>
-          getFieldValue("safety_has") === "yes" && (
-            <>
-              <Form.Item
-                label="症状（可多选）"
-                name="safety_symptoms"
-                rules={[{ required: true }]}
-              >
-                <Checkbox.Group options={["红肿", "瘙痒", "其他"]} />
-              </Form.Item>
-
-              <Form.Item noStyle shouldUpdate>
-                {({ getFieldValue: getValue }) =>
-                  (getValue("safety_symptoms") || []).includes("其他") && (
-                    <Form.Item label="其他说明" name="safety_other">
-                      <Input />
-                    </Form.Item>
-                  )
-                }
-              </Form.Item>
-            </>
-          )
-        }
       </Form.Item>
 
       <Space>

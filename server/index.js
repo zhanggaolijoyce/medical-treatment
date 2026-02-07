@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const path = require("path");
 const fs = require("fs");
+const multer = require("multer");
 
 const { db, init } = require("./db");
 
@@ -16,6 +17,13 @@ app.use(express.json());
 app.use(cors());
 
 init();
+
+const uploadDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+app.use("/uploads", express.static(uploadDir));
 
 app.get("/health", (req, res) => {
   res.send("ok");
@@ -134,7 +142,7 @@ app.post("/patient", (req, res) => {
     category || "",
     consentSigned ? 1 : 0,
     enrollDate,
-    "in_progress"
+    "进行中"
   );
 
   const patientId = patientResult.lastInsertRowid;
@@ -154,6 +162,33 @@ app.post("/patient", (req, res) => {
   }
 
   return res.json({ success: true, patientId });
+});
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (_, __, cb) => cb(null, uploadDir),
+    filename: (_, file, cb) => {
+      const ext = path.extname(file.originalname || "").toLowerCase();
+      const safeExt = ext && ext.length <= 10 ? ext : "";
+      cb(null, `${Date.now()}-${Math.random().toString(16).slice(2)}${safeExt}`);
+    }
+  }),
+  fileFilter: (_, file, cb) => {
+    if (file.mimetype && file.mimetype.startsWith("image/")) {
+      cb(null, true);
+      return;
+    }
+    cb(new Error("仅支持图片文件"));
+  },
+  limits: { fileSize: 10 * 1024 * 1024 }
+});
+
+app.post("/upload", auth, upload.single("file"), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "未收到文件" });
+  }
+  const base = `${req.protocol}://${req.get("host")}`;
+  return res.json({ url: `${base}/uploads/${req.file.filename}` });
 });
 
 app.get("/patients", auth, (req, res) => {

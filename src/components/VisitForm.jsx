@@ -75,6 +75,38 @@ export default function VisitForm({ patientId }) {
     });
   };
 
+  const toImageUrls = (list = []) =>
+    list.map((file) => file?.url || file?.response?.url || file?.name || "");
+
+  const serializeBaseline = (baseline) => ({
+    ...baseline,
+    images: toImageUrls(baseline?.images)
+  });
+
+  const serializeFollowUps = (followUps) =>
+    (followUps || []).map((item) => ({
+      ...item,
+      images: toImageUrls(item?.images)
+    }));
+
+  const handleSaveVisit = async () => {
+    try {
+      const res = await saveForm("visit", {
+        patient_basic: data.patient_basic,
+        baseline: serializeBaseline(data.baseline),
+        treatment: data.treatment
+      });
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        alert(error.message || "保存失败，请重试");
+        return;
+      }
+      setTimeout(() => window.close?.(), 0);
+    } catch (e) {
+      alert("保存失败，请重试");
+    }
+  };
+
   const requiredVssKeys = [
     "color",
     "thickness",
@@ -122,13 +154,7 @@ export default function VisitForm({ patientId }) {
                   <Button
                     type="primary"
                     style={{ marginTop: 24 }}
-                    onClick={() =>
-                      saveForm("visit", {
-                        patient_basic: data.patient_basic,
-                        baseline: data.baseline,
-                        treatment: data.treatment
-                      })
-                    }
+                    onClick={handleSaveVisit}
                   >
                     保存初诊
                   </Button>
@@ -155,11 +181,21 @@ export default function VisitForm({ patientId }) {
                   <Button
                     type="primary"
                     style={{ marginTop: 24 }}
-                    onClick={() =>
-                      saveForm("follow_up", { follow_ups: data.follow_ups }).then(() => {
+                    onClick={async () => {
+                      try {
+                        const res = await saveForm("follow_up", {
+                          follow_ups: serializeFollowUps(data.follow_ups)
+                        });
+                        if (!res.ok) {
+                          const error = await res.json().catch(() => ({}));
+                          alert(error.message || "保存失败，请重试");
+                          return;
+                        }
                         setSavedFollowUpCount(data.follow_ups.length);
-                      })
-                    }
+                      } catch (e) {
+                        alert("保存失败，请重试");
+                      }
+                    }}
                   >
                     保存随访
                   </Button>
