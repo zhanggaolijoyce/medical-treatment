@@ -271,6 +271,47 @@ app.post("/form", auth, (req, res) => {
 });
 
 app.get("/export/excel", auth, (req, res) => {
+  const flattenForExport = (value, prefix = "", out = {}) => {
+    if (Array.isArray(value)) {
+      value.forEach((item, index) => {
+        const nextPrefix = prefix ? `${prefix}[${index}]` : `[${index}]`;
+        if (item && typeof item === "object") {
+          flattenForExport(item, nextPrefix, out);
+        } else {
+          out[nextPrefix] = item ?? "";
+        }
+      });
+      return out;
+    }
+
+    if (value && typeof value === "object") {
+      Object.entries(value).forEach(([key, item]) => {
+        const nextPrefix = prefix ? `${prefix}.${key}` : key;
+        if (item && typeof item === "object") {
+          flattenForExport(item, nextPrefix, out);
+        } else {
+          out[nextPrefix] = item ?? "";
+        }
+      });
+      return out;
+    }
+
+    if (prefix) {
+      out[prefix] = value ?? "";
+    }
+    return out;
+  };
+
+  const parseJsonSafe = (jsonText) => {
+    if (!jsonText) return {};
+    if (typeof jsonText === "object") return jsonText;
+    try {
+      return JSON.parse(jsonText);
+    } catch (e) {
+      return { raw: jsonText };
+    }
+  };
+
   const patients = db
     .prepare(
       "SELECT p.id, p.doctor_id, p.name, p.phone, p.category, p.consent_signed, p.enroll_date, p.status, c.signed_name, c.signed_phone, c.signed_at FROM patients p LEFT JOIN consents c ON c.id = (SELECT id FROM consents c2 WHERE c2.patient_id = p.id ORDER BY c2.signed_at DESC LIMIT 1) WHERE p.doctor_id = ?"
@@ -297,12 +338,15 @@ app.get("/export/excel", auth, (req, res) => {
     签署时间: p.signed_at || ""
   }));
 
-  const formRows = forms.map((f) => ({
-    患者编号: f.patient_id,
-    表单类型: f.form_type,
-    表单内容: f.data_json,
-    提交时间: f.created_at
-  }));
+  const formRows = forms.map((f) => {
+    const parsed = parseJsonSafe(f.data_json);
+    const flattened = flattenForExport(parsed);
+    return {
+      患者编号: f.patient_id,
+      提交时间: f.created_at,
+      ...flattened
+    };
+  });
 
   const workbook = XLSX.utils.book_new();
   const patientSheet = XLSX.utils.json_to_sheet(patientRows);
@@ -326,6 +370,47 @@ app.get("/export/excel", auth, (req, res) => {
 });
 
 app.get("/export/patient-excel", auth, (req, res) => {
+  const flattenForExport = (value, prefix = "", out = {}) => {
+    if (Array.isArray(value)) {
+      value.forEach((item, index) => {
+        const nextPrefix = prefix ? `${prefix}[${index}]` : `[${index}]`;
+        if (item && typeof item === "object") {
+          flattenForExport(item, nextPrefix, out);
+        } else {
+          out[nextPrefix] = item ?? "";
+        }
+      });
+      return out;
+    }
+
+    if (value && typeof value === "object") {
+      Object.entries(value).forEach(([key, item]) => {
+        const nextPrefix = prefix ? `${prefix}.${key}` : key;
+        if (item && typeof item === "object") {
+          flattenForExport(item, nextPrefix, out);
+        } else {
+          out[nextPrefix] = item ?? "";
+        }
+      });
+      return out;
+    }
+
+    if (prefix) {
+      out[prefix] = value ?? "";
+    }
+    return out;
+  };
+
+  const parseJsonSafe = (jsonText) => {
+    if (!jsonText) return {};
+    if (typeof jsonText === "object") return jsonText;
+    try {
+      return JSON.parse(jsonText);
+    } catch (e) {
+      return { raw: jsonText };
+    }
+  };
+
   const { patientId } = req.query;
   if (!patientId) {
     return res.status(400).json({ message: "缺少 patientId" });
@@ -369,12 +454,15 @@ app.get("/export/patient-excel", auth, (req, res) => {
     }
   ];
 
-  const formRows = forms.map((f) => ({
-    患者编号: f.patient_id,
-    表单类型: f.form_type,
-    表单内容: f.data_json,
-    提交时间: f.created_at
-  }));
+  const formRows = forms.map((f) => {
+    const parsed = parseJsonSafe(f.data_json);
+    const flattened = flattenForExport(parsed);
+    return {
+      患者编号: f.patient_id,
+      提交时间: f.created_at,
+      ...flattened
+    };
+  });
 
   const workbook = XLSX.utils.book_new();
   const patientSheet = XLSX.utils.json_to_sheet(patientRows);
